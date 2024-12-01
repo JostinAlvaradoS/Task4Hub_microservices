@@ -1,0 +1,30 @@
+# Ignorar archivos de configuración sensibles
+key.json
+
+# Ignorar directorios de dependencias
+vendor/
+node_modules/
+
+# Ignorar archivos binarios
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Ignorar archivos de compilación
+*.o
+*.a
+*.out
+
+# Ignorar archivos de log
+*.log
+
+# Ignorar archivos temporales
+*.tmp
+*.swp
+*.swo
+*.bak
+
+# Ignorar archivos de sistema
+.DS_Store
+Thumbs.db
