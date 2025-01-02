@@ -1,22 +1,23 @@
 package handlers
 
 import (
-    "context"
-    "net/http"
+	"context"
+	"net/http"
 
-    "github.com/gorilla/mux"
-   "usersManagement/firebase"
+	"task.com/usersManagement/firebase"
+
+	"github.com/gorilla/mux"
 )
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
-    params := mux.Vars(r)
-    id := params["id"]
+	params := mux.Vars(r)
+	id := params["id"]
 
-    _, err := firebase.Client.Collection("users").Doc(id).Delete(context.Background())
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
+	_, err := firebase.Client.Collection("users").Doc(id).Delete(context.Background())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-    w.WriteHeader(http.StatusNoContent)
+	w.WriteHeader(http.StatusNoContent)
 }
