@@ -5,13 +5,11 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"task.com/usersManagement/firebase"
-
 	"github.com/gorilla/mux"
+	"task.com/usersManagement/firebase"
 )
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
-	firebase.InitFirebase()
 	params := mux.Vars(r)
 	uid := params["uid"]
 	// Realizar una consulta en Firestore para buscar por el campo "uid"

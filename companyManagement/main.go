@@ -1,4 +1,4 @@
-package usersManagement
+package companyManagement
 
 // package main
 
@@ -7,7 +7,7 @@ import (
 	// "os"
 	"net/http"
 
-	"task.com/usersManagement/router"
+	"task.com/companyManagement/router"
 )
 
 // CloudFunctionEntryPoint es el punto de entrada para Google Cloud Functions
