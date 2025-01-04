@@ -16,6 +16,10 @@ func NewHTTPHandler() http.Handler {
 	router := mux.NewRouter()
 	router.HandleFunc("/createCompany", handlers.CreateCompany).Methods("POST")
 	router.HandleFunc("/companiesInfo", handlers.GetCompanyManagersAndEmployees).Methods("GET")
+	//manmagement stock
+	router.HandleFunc("/addStock", handlers.AddStock).Methods("POST")
+	router.HandleFunc("/getStock/{companyId}", handlers.GetStock).Methods("GET")
+	router.HandleFunc("/restock", handlers.Restock).Methods("POST")
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173", "https://task4hub.com"}, // Cambia esto para restringir los orígenes permitidos
