@@ -6,14 +6,14 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"task.com/usersManagement/firebase"
+	"task.com/orderManagement/firebase"
 )
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	uid := params["uid"]
 	// Realizar una consulta en Firestore para buscar por el campo "uid"
-	iter := firebase.Client.Collection("user").Where("uid", "==", uid).Documents(context.Background())
+	iter := firebase.Client.Collection("user").Where("UID", "==", uid).Documents(context.Background())
 	defer iter.Stop()
 
 	// Obtener el primer documento que coincida con el uid

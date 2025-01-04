@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"task.com/usersManagement/firebase"
-	"task.com/usersManagement/models"
+	"task.com/orderManagement/firebase"
+	"task.com/orderManagement/models"
 )
 
 func InviteUser(w http.ResponseWriter, r *http.Request) {

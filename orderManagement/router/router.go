@@ -5,8 +5,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
-	"task.com/usersManagement/firebase"
-	"task.com/usersManagement/handlers" // Assuming handlers package exists
+	"task.com/orderManagement/firebase"
+	"task.com/orderManagement/handlers" // Assuming handlers package exists
 )
 
 // NewHTTPHandler returns an HTTP handler that handles all the routes.

@@ -1,4 +1,4 @@
-module task.com/usersManagement
+module task.com/orderManagement
 
 go 1.21.0
 

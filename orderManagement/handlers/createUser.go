@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"task.com/usersManagement/firebase"
-	"task.com/usersManagement/models"
+	"task.com/orderManagement/firebase"
+	"task.com/orderManagement/models"
 )
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {

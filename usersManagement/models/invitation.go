@@ -5,9 +5,9 @@ import "time"
 type Invitation struct {
 	ID          string    `json:"id"`
 	Role        string    `json:"role"`
-	CompanyId   string    `json:"company"`
+	CompanyId   string    `json:"companyId"`
 	CompanyName string    `json:"companyName"`
-	ManagerId   string    `json:"manager"`
+	ManagerId   string    `json:"managerId"`
 	ManagerName string    `json:"managerName"`
 	ExpiresAt   time.Time `json:"expiresAt"`
 }
