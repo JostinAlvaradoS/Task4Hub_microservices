@@ -8,4 +8,5 @@ type User struct {
 	CompanyId   string `json:"companyId"`
 	CompanyName string `json:"companyName"`
 	UID         string `json:"uid"`
+	Status      string `json:"status"`
 }

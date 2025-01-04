@@ -31,7 +31,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	// Incrementar el contador de empleados en la colección companies
 	companyRef := firebase.Client.Collection("company").Doc(user.CompanyId)
 	_, err = companyRef.Update(context.Background(), []firestore.Update{
-		{Path: "employeeCount", Value: firestore.Increment(1)},
+		{Path: "EmployeeCount", Value: firestore.Increment(1)},
 	})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
