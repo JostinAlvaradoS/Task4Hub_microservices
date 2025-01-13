@@ -21,7 +21,7 @@ func NewHTTPHandler() http.Handler {
 	//receptar todos los usuarios de una empresa
 	router.HandleFunc("/users/company/{companyId}", handlers.GetUsersByCompanyId).Methods("GET")
 	//editar usuario
-	router.HandleFunc("/editUser/{uid}", handlers.EditUser).Methods("POST")
+	router.HandleFunc("/editUser/{id}", handlers.EditUser).Methods("POST")
 	//verificar invitacion
 	router.HandleFunc("/verifyInvitation/{id}", handlers.VerifyInvitation).Methods("GET")
 

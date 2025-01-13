@@ -12,7 +12,7 @@ import (
 
 func EditUser(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	uid := params["uid"]
+	id := params["id"]
 
 	var updates map[string]interface{}
 	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
@@ -20,21 +20,11 @@ func EditUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Buscar el documento por el campo UID
-	iter := firebase.Client.Collection("user").Where("UID", "==", uid).Documents(context.Background())
-	defer iter.Stop()
-
-	doc, err := iter.Next()
-	if err != nil {
-		http.Error(w, "Usuario no encontrado", http.StatusNotFound)
-		return
-	}
-
-	// Obtener la referencia del documento del usuario
-	userRef := doc.Ref
+	// Obtener la referencia del documento del usuario utilizando el ID del documento
+	userRef := firebase.Client.Collection("user").Doc(id)
 
 	// Actualizar los campos del usuario
-	_, err = userRef.Update(context.Background(), convertToFirestoreUpdates(updates))
+	_, err := userRef.Update(context.Background(), convertToFirestoreUpdates(updates))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
