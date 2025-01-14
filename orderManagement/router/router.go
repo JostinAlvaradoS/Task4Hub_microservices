@@ -18,9 +18,11 @@ func NewHTTPHandler() http.Handler {
 	router.HandleFunc("/users/{uid}", handlers.GetUser).Methods("GET")
 	//Create invitations.
 	router.HandleFunc("/createInvitation", handlers.InviteUser).Methods("POST")
+	//Create order
+	router.HandleFunc("/orders", handlers.CreateOrder).Methods("POST")
 
 	corsHandler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:5173"}, // Cambia esto para restringir los orígenes permitidos
+		AllowedOrigins:   []string{"http://localhost:5173", "https://task4hub.com"}, // Cambia esto para restringir los orígenes permitidos
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type"},
 		AllowCredentials: true,
