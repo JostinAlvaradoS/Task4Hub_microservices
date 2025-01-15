@@ -9,7 +9,7 @@ type Order struct {
 	CompanyId   string    `json:"companyId"`
 	ManagerId   string    `json:"managerId"`
 	ManagerName string    `json:"managerName"`
-	Rooms       Rooms     `json:"rooms"`
+	Rooms       []Rooms   `json:"rooms"`
 	StartDate   time.Time `json:"startDate"`
 	EndDate     time.Time `json:"endDate"`
 	Status      string    `json:"status"`
