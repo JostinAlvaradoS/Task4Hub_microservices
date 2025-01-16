@@ -5,6 +5,7 @@ import "time"
 type Order struct {
 	ID          string    `json:"id"`
 	Date        time.Time `json:"date"`
+	Type        string    `json:"type"`
 	Location    Location  `json:"location"`
 	CompanyId   string    `json:"companyId"`
 	ManagerId   string    `json:"managerId"`

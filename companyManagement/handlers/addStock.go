@@ -62,8 +62,10 @@ func mergeStock(existing, new models.Stock) models.Stock {
 		for i, existingCategory := range existing.Categories {
 			if existingCategory.CategoryID == newCategory.CategoryID {
 				foundCategory = true
-				// Actualizar subcategorías
-				existing.Categories[i] = mergeCategory(existingCategory, newCategory)
+				// Actualizar subcategorías si existen
+				if len(newCategory.Subcategories) > 0 {
+					existing.Categories[i] = mergeCategory(existingCategory, newCategory)
+				}
 				break
 			}
 		}
@@ -82,8 +84,10 @@ func mergeCategory(existing, new models.Category) models.Category {
 		for i, existingSubcategory := range existing.Subcategories {
 			if existingSubcategory.SubcategoryID == newSubcategory.SubcategoryID {
 				foundSubcategory = true
-				// Actualizar productos
-				existing.Subcategories[i] = mergeSubcategory(existingSubcategory, newSubcategory)
+				// Actualizar productos si existen
+				if len(newSubcategory.Products) > 0 {
+					existing.Subcategories[i] = mergeSubcategory(existingSubcategory, newSubcategory)
+				}
 				break
 			}
 		}
