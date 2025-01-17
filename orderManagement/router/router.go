@@ -14,12 +14,14 @@ func NewHTTPHandler() http.Handler {
 	firebase.InitFirebase()
 	// firebase.InitFirebaseLocal()
 	router := mux.NewRouter()
-	router.HandleFunc("/users", handlers.CreateUser).Methods("POST")
-	router.HandleFunc("/users/{uid}", handlers.GetUser).Methods("GET")
 	//Create invitations.
 	router.HandleFunc("/createInvitation", handlers.InviteUser).Methods("POST")
 	//Create order
 	router.HandleFunc("/orders", handlers.CreateOrder).Methods("POST")
+	//Create activity
+
+	//assign employees
+	router.HandleFunc("/assignEmployees/{orderID}", handlers.AssignEmployees).Methods("POST")
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173", "https://task4hub.com"}, // Cambia esto para restringir los orígenes permitidos

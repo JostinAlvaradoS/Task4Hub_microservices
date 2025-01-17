@@ -70,7 +70,10 @@ func mergeStock(existing, new models.Stock) models.Stock {
 			}
 		}
 		if !foundCategory {
-			// Agregar nueva categoría
+			// Agregar nueva categoría sin subcategorías si no existen
+			if len(newCategory.Subcategories) == 0 {
+				newCategory.Subcategories = nil
+			}
 			existing.Categories = append(existing.Categories, newCategory)
 		}
 	}
@@ -92,7 +95,10 @@ func mergeCategory(existing, new models.Category) models.Category {
 			}
 		}
 		if !foundSubcategory {
-			// Agregar nueva subcategoría
+			// Agregar nueva subcategoría sin productos si no existen
+			if len(newSubcategory.Products) == 0 {
+				newSubcategory.Products = nil
+			}
 			existing.Subcategories = append(existing.Subcategories, newSubcategory)
 		}
 	}
