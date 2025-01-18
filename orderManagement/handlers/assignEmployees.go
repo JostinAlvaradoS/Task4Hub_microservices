@@ -32,7 +32,7 @@ func AssignEmployees(w http.ResponseWriter, r *http.Request) {
 }
 
 func getOrderByID(orderID string) (models.Order, error) {
-	docRef := firebase.Client.Collection("orders").Doc(orderID)
+	docRef := firebase.Client.Collection("order").Doc(orderID)
 	doc, err := docRef.Get(context.Background())
 	if err != nil {
 		return models.Order{}, err
@@ -43,7 +43,7 @@ func getOrderByID(orderID string) (models.Order, error) {
 }
 
 func getActivitiesByOrderID(orderID string) []models.Activity {
-	iter := firebase.Client.Collection("activities").Where("OrderID", "==", orderID).Documents(context.Background())
+	iter := firebase.Client.Collection("activity").Where("OrderID", "==", orderID).Documents(context.Background())
 	var activities []models.Activity
 	for {
 		doc, err := iter.Next()
@@ -67,7 +67,7 @@ func assignEmployeesToActivities(employees []models.Employee, activities []model
 		employeeIndex = (employeeIndex + 1) % len(employees)
 
 		// Actualizar la actividad en Firestore
-		docRef := firebase.Client.Collection("activities").Doc(activities[i].ID)
+		docRef := firebase.Client.Collection("activity").Doc(activities[i].ID)
 		_, err := docRef.Set(context.Background(), activities[i])
 		if err != nil {
 			continue
