@@ -19,7 +19,8 @@ func NewHTTPHandler() http.Handler {
 	//Create order
 	router.HandleFunc("/orders", handlers.CreateOrder).Methods("POST")
 	//Create activity
-
+	router.HandleFunc("/defaultActivities", handlers.GetDefaultActivities).Methods("GET")
+	router.HandleFunc("/createActivity", handlers.CreateActivity).Methods("POST")
 	//assign employees
 	router.HandleFunc("/assignEmployees/{orderID}", handlers.AssignEmployees).Methods("POST")
 	// Get available users
