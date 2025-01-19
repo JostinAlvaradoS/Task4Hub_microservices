@@ -10,37 +10,45 @@ import (
 	"task.com/orderManagement/models"
 )
 
-func CreateActivity(w http.ResponseWriter, r *http.Request) {
-	var activity models.Activity
-	if err := json.NewDecoder(r.Body).Decode(&activity); err != nil {
+func CreateActivities(w http.ResponseWriter, r *http.Request) {
+	var activities []models.Activity
+	if err := json.NewDecoder(r.Body).Decode(&activities); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// Crear la actividad en Firestore
-	docRef := firebase.Client.Collection("activities").NewDoc()
-	activity.ID = docRef.ID
+	// Iniciar una transacción
+	ctx := context.Background()
+	batch := firebase.Client.Batch()
 
-	_, err := docRef.Set(context.Background(), activity)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	for _, activity := range activities {
+		// Crear la actividad en Firestore
+		docRef := firebase.Client.Collection("activity").NewDoc()
+		activity.ID = docRef.ID
+
+		batch.Set(docRef, activity)
+
+		// Restar el stock necesario de la empresa
+		err := subtractStock(ctx, activity)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
-	// Restar el stock necesario de la empresa
-	err = subtractStock(activity)
+	// Ejecutar la transacción
+	_, err := batch.Commit(ctx)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(activity)
+	json.NewEncoder(w).Encode(activities)
 }
 
-func subtractStock(activity models.Activity) error {
+func subtractStock(ctx context.Context, activity models.Activity) error {
 	// Obtener el documento del stock por el ID de la empresa usando un where
-
 	iter := firebase.Client.Collection("stock").Where("CompanyID", "==", activity.CompanyID).Documents(context.Background())
 	doc, err := iter.Next()
 	if err != nil {
@@ -64,7 +72,7 @@ func subtractStock(activity models.Activity) error {
 						for k, product := range subcategory.Products {
 							if product.ProductID == requiredStock.ProductID {
 								if product.CurrentAmount < requiredStock.Quantity {
-									return fmt.Errorf("stock insuficiente para el producto %s", product.ProductID)
+									return fmt.Errorf("insufficient stock for product %s", product.ProductID)
 								}
 								stock.Categories[i].Subcategories[j].Products[k].CurrentAmount -= requiredStock.Quantity
 							}
@@ -76,6 +84,6 @@ func subtractStock(activity models.Activity) error {
 	}
 
 	// Actualizar el stock de la empresa en Firestore
-	_, err = doc.Ref.Set(context.Background(), stock)
+	_, err = doc.Ref.Set(ctx, stock)
 	return err
 }

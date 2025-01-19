@@ -19,7 +19,10 @@ type Activity struct {
 type RequiredStock struct {
 	ID            string `json:"id"`
 	CategoryID    string `json:"categoryId"`
+	CategoryName  string `json:"categoryName"`
 	SubcategoryID string `json:"subcategoryId"`
+	Subcategory   string `json:"subcategory"`
 	ProductID     string `json:"productId"`
+	ProductName   string `json:"productName"`
 	Quantity      int    `json:"quantity"`
 }

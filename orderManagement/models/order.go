@@ -16,3 +16,9 @@ type Order struct {
 	EndDate     string     `json:"endDate"`
 	Status      string     `json:"status"`
 }
+
+type Location struct {
+	Address   string `json:"address"`
+	Latitude  string `json:"latitude"`
+	Longitude string `json:"longitude"`
+}
