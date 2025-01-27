@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"cloud.google.com/go/firestore"
 	"task.com/usersManagement/firebase"
 	"task.com/usersManagement/models"
 )
@@ -17,22 +16,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Crear un nuevo documento en Firestore y obtener su referencia
-	docRef := firebase.Client.Collection("user").NewDoc()
-	user.ID = docRef.ID
-
-	// Guardar el usuario en Firestore usando el UID proporcionado
-	_, err := docRef.Set(context.Background(), user)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// Incrementar el contador de empleados en la colección companies
-	companyRef := firebase.Client.Collection("company").Doc(user.CompanyId)
-	_, err = companyRef.Update(context.Background(), []firestore.Update{
-		{Path: "EmployeeCount", Value: firestore.Increment(1)},
-	})
+	_, _, err := firebase.Client.Collection("user").Add(context.Background(), user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
