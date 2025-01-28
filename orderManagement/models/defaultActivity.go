@@ -1,7 +1,6 @@
 package models
 
 type RequiredDefaultStock struct {
-	ID              string `json:"id"`
 	CategoryID      string `json:"categoryId"`
 	CategoryName    string `json:"categoryName"`
 	SubcategoryID   string `json:"subcategoryId"`
@@ -9,6 +8,7 @@ type RequiredDefaultStock struct {
 	ProductID       string `json:"productId"`
 	ProductName     string `json:"productName"`
 	Quantity        int    `json:"quantity"`
+	Returnable      bool   `json:"returnable"`
 }
 
 type DefaultActivity struct {
@@ -16,6 +16,7 @@ type DefaultActivity struct {
 	CompanyID     string          `json:"companyId"`
 	Name          string          `json:"name"`
 	Description   string          `json:"description"`
-	Type          string          `json:"type"`
+	ActivityType  string          `json:"activityType"`
+	RoomType      string          `json:"roomType"`
 	RequiredStock []RequiredStock `json:"requiredStock"`
 }

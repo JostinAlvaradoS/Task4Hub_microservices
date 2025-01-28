@@ -12,12 +12,14 @@ import (
 // NewHTTPHandler returns an HTTP handler that handles all the routes.
 func NewHTTPHandler() http.Handler {
 	firebase.InitFirebase()
-	// firebase.InitFirebaseLocal()
+	//firebase.InitFirebaseLocal()
 	router := mux.NewRouter()
 	//Create invitations.
 	router.HandleFunc("/createInvitation", handlers.InviteUser).Methods("POST")
 	//Create order
 	router.HandleFunc("/orders", handlers.CreateOrder).Methods("POST")
+	//Finish order
+	router.HandleFunc("/finishOrder/{id}", handlers.FinishOrder).Methods("POST")
 	//Create activity
 	router.HandleFunc("/defaultActivities/{companyId}", handlers.GetDefaultActivities).Methods("GET")
 	router.HandleFunc("/createActivity", handlers.CreateActivities).Methods("POST")
