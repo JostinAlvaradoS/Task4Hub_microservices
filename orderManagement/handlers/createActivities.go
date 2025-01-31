@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"google.golang.org/api/iterator"
 	"task.com/orderManagement/firebase"
@@ -23,6 +24,15 @@ func CreateActivities(w http.ResponseWriter, r *http.Request) {
 	batch := firebase.Client.Batch()
 
 	for _, activity := range activities {
+		if activity.StartDate.IsZero() {
+			activity.StartDate = time.Now().UTC()
+		}
+
+		// Establecer EndDate en una hora predeterminada si no se proporciona
+		if activity.EndDate.IsZero() {
+			activity.EndDate = activity.StartDate.Add(1 * time.Hour) // Por ejemplo, 1 hora después de StartDate
+		}
+
 		// Crear la actividad en Firestore
 		docRef := firebase.Client.Collection("activity").NewDoc()
 		activity.ID = docRef.ID

@@ -33,7 +33,7 @@ func GetReportManager(w http.ResponseWriter, r *http.Request) {
 	currentDate := time.Now().UTC().Format("2006-01-02")
 
 	// Obtener todos los usuarios con Status == active
-	usersIter := firebase.Client.Collection("user").Where("CompanyID", "==", companyId).Where("Status", "==", "active").Documents(context.Background())
+	usersIter := firebase.Client.Collection("user").Where("CompanyId", "==", companyId).Where("Status", "==", "active").Documents(context.Background())
 	activeUsersCount := 0
 	for {
 		_, err := usersIter.Next()
