@@ -1,10 +1,8 @@
 package models
 
-import "time"
-
 type Order struct {
 	ID          string     `json:"id"`
-	Date        time.Time  `json:"date"`
+	Date        string     `json:"date"`
 	Type        string     `json:"type"`
 	Location    Location   `json:"location"`
 	CompanyId   string     `json:"companyId"`

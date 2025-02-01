@@ -5,6 +5,7 @@ import "time"
 type Activity struct {
 	ID            string          `json:"id"`
 	Name          string          `json:"name"`
+	Date          string          `json:"date"`
 	CompanyID     string          `json:"companyId"`
 	Description   string          `json:"description"`
 	OrderID       string          `json:"orderId"`
