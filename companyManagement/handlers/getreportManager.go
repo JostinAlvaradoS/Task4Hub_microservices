@@ -48,7 +48,7 @@ func GetReportManager(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Obtener todas las actividades completadas del día actual
-	completedActivitiesIter := firebase.Client.Collection("activity").Where("CompanyID", "==", companyId).Where("Status", "==", "completed").Where("StartDate", ">=", currentDate).Where("StartDate", "<", currentDate+"T23:59:59Z").Documents(context.Background())
+	completedActivitiesIter := firebase.Client.Collection("activity").Where("CompanyID", "==", companyId).Where("Status", "==", "finished").Where("StartDate", ">=", currentDate).Where("StartDate", "<", currentDate+"T23:59:59Z").Documents(context.Background())
 	completedActivitiesMap := make(map[string]*CompletedActivity)
 	for {
 		doc, err := completedActivitiesIter.Next()
@@ -79,7 +79,7 @@ func GetReportManager(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Obtener todas las actividades no completadas del día actual
-	uncompletedActivitiesIter := firebase.Client.Collection("activity").Where("CompanyID", "==", companyId).Where("Status", "!=", "completed").Where("StartDate", ">=", currentDate).Where("StartDate", "<", currentDate+"T23:59:59Z").Documents(context.Background())
+	uncompletedActivitiesIter := firebase.Client.Collection("activity").Where("CompanyID", "==", companyId).Where("Status", "!=", "finished").Where("StartDate", ">=", currentDate).Where("StartDate", "<", currentDate+"T23:59:59Z").Documents(context.Background())
 	uncompletedActivitiesCount := 0
 	for {
 		_, err := uncompletedActivitiesIter.Next()

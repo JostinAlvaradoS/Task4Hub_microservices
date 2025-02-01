@@ -31,7 +31,7 @@ func NewHTTPHandler() http.Handler {
 	// Get available users
 	router.HandleFunc("/getAvailableUsers/{companyId}/{startDate}/{endDate}", handlers.GetAvailableUsers).Methods("GET")
 	// Get orders by present day
-	router.HandleFunc("/orders/today", handlers.GetOrdersActualDay).Methods("GET")
+	router.HandleFunc("/getDiariesOrders/{companyId}", handlers.GetDiariesOrders).Methods("GET")
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173", "https://task4hub.com", "https://www.task4hub.com"}, // Cambia esto para restringir los orígenes permitidos
