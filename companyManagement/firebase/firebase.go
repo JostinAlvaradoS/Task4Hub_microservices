@@ -49,13 +49,13 @@ func getFirebaseCredentials(ctx context.Context, secretName string) ([]byte, err
 	return resp.Payload.Data, nil
 }
 
-// func InitFirebaseLocal() {
-// 	ctx := context.Background()
-// 	// Carga las credenciales desde el archivo key.json
-// 	opt := option.WithCredentialsFile("key.json")
-// 	client, err := firestore.NewClient(ctx, "task-444104", opt)
-// 	if err != nil {
-// 		log.Fatalf("Failed to create Firestore client: %v", err)
-// 	}
-// 	Client = client
-// }
+func InitFirebaseLocal() {
+	ctx := context.Background()
+	// Carga las credenciales desde el archivo key.json
+	opt := option.WithCredentialsFile("key.json")
+	client, err := firestore.NewClient(ctx, "task-444104", opt)
+	if err != nil {
+		log.Fatalf("Failed to create Firestore client: %v", err)
+	}
+	Client = client
+}

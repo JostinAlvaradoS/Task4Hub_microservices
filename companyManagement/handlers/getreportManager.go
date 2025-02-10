@@ -79,7 +79,7 @@ func GetReportManager(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Obtener todas las actividades no completadas del día actual
-	uncompletedActivitiesIter := firebase.Client.Collection("activity").Where("CompanyID", "==", companyId).Where("Status", "!=", "finished").Where("Date", "==", currentDate).Documents(context.Background())
+	uncompletedActivitiesIter := firebase.Client.Collection("activity").Where("CompanyID", "==", companyId).Where("Status", "==", "pending").Where("Date", "==", currentDate).Documents(context.Background())
 	uncompletedActivitiesCount := 0
 	for {
 		_, err := uncompletedActivitiesIter.Next()

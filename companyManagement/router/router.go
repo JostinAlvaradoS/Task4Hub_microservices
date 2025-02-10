@@ -12,7 +12,7 @@ import (
 // NewHTTPHandler returns an HTTP handler that handles all the routes.
 func NewHTTPHandler() http.Handler {
 	firebase.InitFirebase()
-	// firebase.InitFirebaseLocal()
+	//firebase.InitFirebaseLocal()
 	router := mux.NewRouter()
 	router.HandleFunc("/createCompany", handlers.CreateCompany).Methods("POST")
 	router.HandleFunc("/companiesInfo", handlers.GetCompanyManagersAndEmployees).Methods("GET")
