@@ -19,4 +19,5 @@ type DefaultActivity struct {
 	ActivityType  string          `json:"activityType"`
 	RoomType      string          `json:"roomType"`
 	RequiredStock []RequiredStock `json:"requiredStock"`
+	EstimatedTime int             `json:"estimatedTime"`
 }
