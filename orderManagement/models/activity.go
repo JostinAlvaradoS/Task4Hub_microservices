@@ -14,6 +14,7 @@ type Activity struct {
 	ActivityType  string          `json:"activityType"`
 	StartDate     time.Time       `json:"startDate"`
 	EndDate       time.Time       `json:"endDate"`
+	EstimatedTime int             `json:"estimatedTime"`
 	Status        string          `json:"status"`
 	RequiredStock []RequiredStock `json:"requiredStock"`
 }

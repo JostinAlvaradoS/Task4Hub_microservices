@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"google.golang.org/api/iterator"
@@ -25,7 +27,24 @@ func AssignEmployees(w http.ResponseWriter, r *http.Request) {
 	activities := getActivitiesByOrderID(orderID)
 
 	// Asignar empleados a las actividades de manera equitativa
-	assignEmployeesToActivities(order.Employees, activities)
+	err = assignEmployeesToActivities(order, activities)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Calcular el startTime y endTime de la orden
+	orderStartTime, orderEndTime := calculateOrderTimes(activities)
+	order.StartDate = orderStartTime.Format(time.RFC3339)
+	order.EndDate = orderEndTime.Format(time.RFC3339)
+
+	// Actualizar la orden en Firestore
+	docRef := firebase.Client.Collection("order").Doc(order.ID)
+	_, err = docRef.Set(context.Background(), order)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Employees assigned to activities successfully"))
@@ -60,17 +79,55 @@ func getActivitiesByOrderID(orderID string) []models.Activity {
 	return activities
 }
 
-func assignEmployeesToActivities(employees []models.Employee, activities []models.Activity) {
-	employeeIndex := 0
-	for i := range activities {
-		activities[i].Employee = employees[employeeIndex]
-		employeeIndex = (employeeIndex + 1) % len(employees)
+func assignEmployeesToActivities(order models.Order, activities []models.Activity) error {
+	employeeWorkload := make(map[string]time.Duration)
+	for _, employee := range order.Employees {
+		employeeWorkload[employee.ID] = 0
+	}
+
+	// Parsear el startDate de la orden
+	startTime, err := time.Parse(time.RFC3339, order.StartDate)
+	if err != nil {
+		return fmt.Errorf("invalid start date format: %v", err)
+	}
+
+	for _, activity := range activities {
+		assigned := false
+		for _, employee := range order.Employees {
+			if employeeWorkload[employee.ID]+time.Duration(activity.EstimatedTime)*time.Minute <= 8*time.Hour {
+				activity.Employee = employee
+				activity.StartDate = startTime.Add(employeeWorkload[employee.ID])
+				activity.EndDate = activity.StartDate.Add(time.Duration(activity.EstimatedTime) * time.Minute)
+				employeeWorkload[employee.ID] += time.Duration(activity.EstimatedTime) * time.Minute
+				assigned = true
+				break
+			}
+		}
+		if !assigned {
+			return fmt.Errorf("not enough employees to cover all activities")
+		}
 
 		// Actualizar la actividad en Firestore
-		docRef := firebase.Client.Collection("activity").Doc(activities[i].ID)
-		_, err := docRef.Set(context.Background(), activities[i])
+		docRef := firebase.Client.Collection("activity").Doc(activity.ID)
+		_, err := docRef.Set(context.Background(), activity)
 		if err != nil {
-			continue
+			return err
 		}
 	}
+
+	return nil
+}
+
+func calculateOrderTimes(activities []models.Activity) (time.Time, time.Time) {
+	var earliestStartTime, latestEndTime time.Time
+	for i, activity := range activities {
+		if i == 0 || activity.StartDate.Before(earliestStartTime) {
+			earliestStartTime = activity.StartDate
+		}
+		if activity.EndDate.After(latestEndTime) {
+			latestEndTime = activity.EndDate
+		}
+	}
+	// Agregar 15 minutos de gracia
+	return earliestStartTime, latestEndTime.Add(15 * time.Minute)
 }

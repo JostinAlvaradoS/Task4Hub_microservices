@@ -23,6 +23,11 @@ type Rooms struct {
 	Status      string      `json:"status"`
 	Evidence    Evidence    `json:"evidence"`
 	Locker      Locker      `json:"locker"`
-	BedCount    int         `json:"bedCount"`
+	Bed         []Bed       `json:"bed"`
 	FloorType   string      `json:"floorType"`
+}
+
+type Bed struct {
+	Name string `json:"name"`
+	Size string `json:"size"`
 }

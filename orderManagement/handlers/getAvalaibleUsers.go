@@ -102,14 +102,17 @@ func isWithinWorkHours(schedule models.Schedule, startDate, endDate time.Time) b
 	dayOfWeek := startDate.Weekday().String()
 	for _, workDay := range schedule.WorkDays {
 		if workDay.Day == dayOfWeek {
-			startTime, _ := time.Parse("15:04", workDay.StartTime)
-			endTime, _ := time.Parse("15:04", workDay.EndTime)
+			for _, scheduleDay := range workDay.Schedule {
+				startTime, _ := time.Parse("15:04", scheduleDay.StartTime)
+				endTime, _ := time.Parse("15:04", scheduleDay.EndTime)
 
-			workStart := time.Date(startDate.Year(), startDate.Month(), startDate.Day(), startTime.Hour(), startTime.Minute(), 0, 0, startDate.Location())
-			workEnd := time.Date(startDate.Year(), startDate.Month(), startDate.Day(), endTime.Hour(), endTime.Minute(), 0, 0, startDate.Location())
+				workStart := time.Date(startDate.Year(), startDate.Month(), startDate.Day(), startTime.Hour(), startTime.Minute(), 0, 0, startDate.Location())
+				workEnd := time.Date(startDate.Year(), startDate.Month(), startDate.Day(), endTime.Hour(), endTime.Minute(), 0, 0, startDate.Location())
 
-			if startDate.After(workStart) && endDate.Before(workEnd) {
-				return true
+				// Verificar si el intervalo de tiempo especificado está completamente dentro de algún rango de horario de trabajo
+				if (startDate.After(workStart) || startDate.Equal(workStart)) && (endDate.Before(workEnd) || endDate.Equal(workEnd)) {
+					return true
+				}
 			}
 		}
 	}

@@ -17,7 +17,11 @@ type Schedule struct {
 }
 
 type WorkDay struct {
-	Day       string `json:"day"`
+	Day      string        `json:"day"`
+	Schedule []ScheduleDay `json:"schedule"`
+}
+
+type ScheduleDay struct {
 	StartTime string `json:"startTime"`
 	EndTime   string `json:"endTime"`
 }

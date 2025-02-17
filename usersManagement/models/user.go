@@ -11,3 +11,17 @@ type User struct {
 	Status      string   `json:"status"`
 	Schedule    Schedule `json:"schedule"`
 }
+
+type Schedule struct {
+	WorkDays []WorkDay `json:"workDays"`
+}
+
+type WorkDay struct {
+	Day      string        `json:"day"`
+	Schedule []ScheduleDay `json:"schedule"`
+}
+
+type ScheduleDay struct {
+	StartTime string `json:"startTime"`
+	EndTime   string `json:"endTime"`
+}
