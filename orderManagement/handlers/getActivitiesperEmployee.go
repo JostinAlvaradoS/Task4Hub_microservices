@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 	"google.golang.org/api/iterator"
@@ -12,14 +13,16 @@ import (
 )
 
 func GetActivitiesPerEmployee(w http.ResponseWriter, r *http.Request) {
-	// Obtener el companyId de la URL
+	// Obtener el employeeId de la URL
 	vars := mux.Vars(r)
-	employeeId := vars["employeeId"]
+	employeeId := vars["employeeID"]
 
-	// Realizar una consulta en Firestore para buscar las órdenes del día actual
-	// Realizar una consulta en Firestore para buscar las actividades predeterminadas por companyId
-	iter := firebase.Client.Collection("Activity").Where("Employee.ID", "==", employeeId).Documents(context.Background())
-	var users []models.User
+	// Obtener la fecha de hoy
+	today := time.Now().Format("2006-01-02")
+
+	// Realizar una consulta en Firestore para buscar las actividades por employeeId, fecha de hoy y estado "pending"
+	iter := firebase.Client.Collection("activity").Where("Employee.ID", "==", employeeId).Where("Date", "==", today).Where("Status", "==", "pending").Documents(context.Background())
+	var activities []models.Activity
 	for {
 		doc, err := iter.Next()
 		if err == iterator.Done {
@@ -29,11 +32,11 @@ func GetActivitiesPerEmployee(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Error al obtener las actividades por trabajador", http.StatusInternalServerError)
 			return
 		}
-		var user models.User
-		doc.DataTo(&user)
-		users = append(users, user)
+		var activity models.Activity
+		doc.DataTo(&activity)
+		activities = append(activities, activity)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(users)
+	json.NewEncoder(w).Encode(activities)
 }

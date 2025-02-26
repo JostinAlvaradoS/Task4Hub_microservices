@@ -33,19 +33,6 @@ func AssignEmployees(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Calcular el startTime y endTime de la orden
-	orderStartTime, orderEndTime := calculateOrderTimes(activities)
-	order.StartDate = orderStartTime.Format(time.RFC3339)
-	order.EndDate = orderEndTime.Format(time.RFC3339)
-
-	// Actualizar la orden en Firestore
-	docRef := firebase.Client.Collection("order").Doc(order.ID)
-	_, err = docRef.Set(context.Background(), order)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Employees assigned to activities successfully"))
 }
@@ -85,19 +72,30 @@ func assignEmployeesToActivities(order models.Order, activities []models.Activit
 		employeeWorkload[employee.ID] = 0
 	}
 
-	// Parsear el startDate de la orden
-	startTime, err := time.Parse(time.RFC3339, order.StartDate)
+	orderStartTime, err := time.Parse(time.RFC3339, order.StartDate)
 	if err != nil {
 		return fmt.Errorf("invalid start date format: %v", err)
+	}
+	orderEndTime, err := time.Parse(time.RFC3339, order.EndDate)
+	if err != nil {
+		return fmt.Errorf("invalid end date format: %v", err)
+	}
+
+	totalOrderDuration := orderEndTime.Sub(orderStartTime)
+	totalActivityDuration := time.Duration(0)
+	for _, activity := range activities {
+		totalActivityDuration += time.Duration(activity.EstimatedTime) * time.Minute
+	}
+
+	if totalActivityDuration > totalOrderDuration*time.Duration(len(order.Employees)) {
+		return fmt.Errorf("not enough time to complete all activities with the available employees")
 	}
 
 	for _, activity := range activities {
 		assigned := false
 		for _, employee := range order.Employees {
-			if employeeWorkload[employee.ID]+time.Duration(activity.EstimatedTime)*time.Minute <= 8*time.Hour {
+			if employeeWorkload[employee.ID]+time.Duration(activity.EstimatedTime)*time.Minute <= totalOrderDuration {
 				activity.Employee = employee
-				activity.StartDate = startTime.Add(employeeWorkload[employee.ID])
-				activity.EndDate = activity.StartDate.Add(time.Duration(activity.EstimatedTime) * time.Minute)
 				employeeWorkload[employee.ID] += time.Duration(activity.EstimatedTime) * time.Minute
 				assigned = true
 				break
@@ -116,18 +114,4 @@ func assignEmployeesToActivities(order models.Order, activities []models.Activit
 	}
 
 	return nil
-}
-
-func calculateOrderTimes(activities []models.Activity) (time.Time, time.Time) {
-	var earliestStartTime, latestEndTime time.Time
-	for i, activity := range activities {
-		if i == 0 || activity.StartDate.Before(earliestStartTime) {
-			earliestStartTime = activity.StartDate
-		}
-		if activity.EndDate.After(latestEndTime) {
-			latestEndTime = activity.EndDate
-		}
-	}
-	// Agregar 15 minutos de gracia
-	return earliestStartTime, latestEndTime.Add(15 * time.Minute)
 }

@@ -24,6 +24,8 @@ func NewHTTPHandler() http.Handler {
 	router.HandleFunc("/defaultActivities/{companyId}", handlers.GetDefaultActivities).Methods("GET")
 	router.HandleFunc("/createActivity", handlers.CreateActivities).Methods("POST")
 	router.HandleFunc("/createDefaultActivity", handlers.CreateDefaultActivity).Methods("POST")
+	//Substract Stock
+	router.HandleFunc("/substractStock", handlers.SubtractStock).Methods("POST")
 	//edit activity
 	router.HandleFunc("/editActivity/{id}", handlers.UpdateActivity).Methods("POST")
 	//assign employees
@@ -32,6 +34,8 @@ func NewHTTPHandler() http.Handler {
 	router.HandleFunc("/getAvailableUsers/{companyId}/{startDate}/{endDate}", handlers.GetAvailableUsers).Methods("GET")
 	// Get orders by present day
 	router.HandleFunc("/getDiariesOrders/{companyId}", handlers.GetDiariesOrders).Methods("GET")
+	// Get orders by present day solo si consta el empleado
+	router.HandleFunc("/orders/diaries/{companyId}/{employeeID}", handlers.GetDiariesOrdersEmployee).Methods("GET")
 	// Get orders by type=airbnb
 	router.HandleFunc("/getAirbnbOrders/{companyId}", handlers.GetAirbnbOrders).Methods("GET")
 	// Get activities per employee
