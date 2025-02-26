@@ -22,13 +22,18 @@ func CreateActivities(w http.ResponseWriter, r *http.Request) {
 	batch := firebase.Client.Batch()
 
 	for _, activity := range activities {
-		if activity.StartDate.IsZero() {
-			activity.StartDate = time.Now().UTC()
+		if activity.StartDate == "" {
+			activity.StartDate = time.Now().UTC().Format(time.RFC3339)
 		}
 
 		// Establecer EndDate en una hora predeterminada si no se proporciona
-		if activity.EndDate.IsZero() {
-			activity.EndDate = activity.StartDate.Add(1 * time.Hour) // Por ejemplo, 1 hora después de StartDate
+		if activity.EndDate == "" {
+			startTime, err := time.Parse(time.RFC3339, activity.StartDate)
+			if err != nil {
+				http.Error(w, "Invalid start date format", http.StatusBadRequest)
+				return
+			}
+			activity.EndDate = startTime.Add(1 * time.Hour).Format(time.RFC3339) // Por ejemplo, 1 hora después de StartDate
 		}
 
 		// Crear la actividad en Firestore

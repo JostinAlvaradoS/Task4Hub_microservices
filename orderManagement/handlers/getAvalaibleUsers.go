@@ -87,8 +87,17 @@ func isUserAvailable(user models.User, startDate, endDate time.Time) bool {
 		var activity models.Activity
 		doc.DataTo(&activity)
 
+		activityStartTime, err := time.Parse(time.RFC3339, activity.StartDate)
+		if err != nil {
+			continue
+		}
+		activityEndTime, err := time.Parse(time.RFC3339, activity.EndDate)
+		if err != nil {
+			continue
+		}
+
 		// Verificar si la actividad se solapa con el intervalo de tiempo especificado
-		if activity.StartDate.Before(endDate.Add(-1*time.Hour)) && activity.EndDate.After(startDate.Add(1*time.Hour)) {
+		if activityStartTime.Before(endDate) && activityEndTime.After(startDate) {
 			return false
 		}
 	}

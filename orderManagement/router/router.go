@@ -33,13 +33,13 @@ func NewHTTPHandler() http.Handler {
 	// Get available users
 	router.HandleFunc("/getAvailableUsers/{companyId}/{startDate}/{endDate}", handlers.GetAvailableUsers).Methods("GET")
 	// Get orders by present day
-	router.HandleFunc("/getDiariesOrders/{companyId}", handlers.GetDiariesOrders).Methods("GET")
+	router.HandleFunc("/getDiariesOrders/{companyId}/{date}", handlers.GetDiariesOrders).Methods("GET")
 	// Get orders by present day solo si consta el empleado
-	router.HandleFunc("/orders/diaries/{companyId}/{employeeID}", handlers.GetDiariesOrdersEmployee).Methods("GET")
+	router.HandleFunc("/orders/diaries/{companyId}/{employeeID}/{date}", handlers.GetDiariesOrdersEmployee).Methods("GET")
 	// Get orders by type=airbnb
 	router.HandleFunc("/getAirbnbOrders/{companyId}", handlers.GetAirbnbOrders).Methods("GET")
 	// Get activities per employee
-	router.HandleFunc("/getActivitiesPerEmployee/{employeeID}", handlers.GetActivitiesPerEmployee).Methods("GET")
+	router.HandleFunc("/getActivitiesPerEmployee/{employeeID}/{date}", handlers.GetActivitiesPerEmployee).Methods("GET")
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173", "https://task4hub.com", "https://www.task4hub.com"}, // Cambia esto para restringir los orígenes permitidos

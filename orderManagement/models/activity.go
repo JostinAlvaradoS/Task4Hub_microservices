@@ -1,7 +1,5 @@
 package models
 
-import "time"
-
 type Activity struct {
 	ID            string          `json:"id"`
 	Name          string          `json:"name"`
@@ -12,8 +10,8 @@ type Activity struct {
 	RoomId        string          `json:"roomId"`
 	Employee      Employee        `json:"employee"`
 	ActivityType  string          `json:"activityType"`
-	StartDate     time.Time       `json:"startDate"`
-	EndDate       time.Time       `json:"endDate"`
+	StartDate     string          `json:"startDate"`
+	EndDate       string          `json:"endDate"`
 	EstimatedTime int             `json:"estimatedTime"`
 	Status        string          `json:"status"`
 	RequiredStock []RequiredStock `json:"requiredStock"`

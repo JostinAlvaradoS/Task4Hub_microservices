@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"github.com/gorilla/mux"
 	"google.golang.org/api/iterator"
@@ -17,9 +16,8 @@ func GetDiariesOrdersEmployee(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	companyId := vars["companyId"]
 	employeeId := vars["employeeID"]
-
 	// Obtener la fecha actual en UTC
-	currentDate := time.Now().Format("2006-01-02")
+	currentDate := vars["date"]
 
 	// Realizar una consulta en Firestore para buscar las órdenes del día actual y de la empresa específica
 	iter := firebase.Client.Collection("order").Where("CompanyId", "==", companyId).Where("Date", "==", currentDate).Documents(context.Background())

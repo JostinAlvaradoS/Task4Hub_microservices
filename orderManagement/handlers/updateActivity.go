@@ -23,7 +23,7 @@ func UpdateActivity(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Obtener el documento de la actividad en Firestore
-	docRef := firebase.Client.Collection("activitiy").Doc(activity.ID)
+	docRef := firebase.Client.Collection("activity").Doc(activity.ID)
 	doc, err := docRef.Get(context.Background())
 	if err != nil {
 		http.Error(w, "Activity not found", http.StatusNotFound)
@@ -55,10 +55,10 @@ func UpdateActivity(w http.ResponseWriter, r *http.Request) {
 	if activity.ActivityType != "" {
 		existingActivity.ActivityType = activity.ActivityType
 	}
-	if !activity.StartDate.IsZero() {
+	if activity.StartDate != "" {
 		existingActivity.StartDate = activity.StartDate
 	}
-	if !activity.EndDate.IsZero() {
+	if activity.EndDate != "" {
 		existingActivity.EndDate = activity.EndDate
 	}
 	if activity.Status != "" {
