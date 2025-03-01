@@ -27,7 +27,7 @@ func NewHTTPHandler() http.Handler {
 	//Substract Stock
 	router.HandleFunc("/substractStock", handlers.SubtractStock).Methods("POST")
 	//edit activity
-	router.HandleFunc("/editActivity/{id}", handlers.UpdateActivity).Methods("POST")
+	router.HandleFunc("/editActivity", handlers.UpdateActivity).Methods("POST")
 	//assign employees
 	router.HandleFunc("/assignEmployees/{orderID}", handlers.AssignEmployees).Methods("POST")
 	// Get available users
@@ -40,6 +40,10 @@ func NewHTTPHandler() http.Handler {
 	router.HandleFunc("/getAirbnbOrders/{companyId}", handlers.GetAirbnbOrders).Methods("GET")
 	// Get activities per employee
 	router.HandleFunc("/getActivitiesPerEmployee/{employeeID}/{date}", handlers.GetActivitiesPerEmployee).Methods("GET")
+	// Update order
+	router.HandleFunc("/updateOrder", handlers.UpdateOrder).Methods("POST")
+	// Nueva ruta para crear órdenes programadas
+	router.HandleFunc("/createScheduledOrders/{startDate}/{endDate}", handlers.CreateScheduledOrders).Methods("POST")
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173", "https://task4hub.com", "https://www.task4hub.com"}, // Cambia esto para restringir los orígenes permitidos
