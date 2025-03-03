@@ -16,7 +16,18 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, _, err := firebase.Client.Collection("user").Add(context.Background(), user)
+	// Agregar el usuario a la colección y obtener el ID generado por Firebase
+	docRef, _, err := firebase.Client.Collection("user").Add(context.Background(), user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Actualizar el campo ID del usuario con el ID generado por Firebase
+	user.ID = docRef.ID
+
+	// Guardar el usuario actualizado en Firestore
+	_, err = docRef.Set(context.Background(), user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
