@@ -57,7 +57,7 @@ func CreateScheduledOrders(w http.ResponseWriter, r *http.Request) {
 					Date:        date.Format("2006-01-02"),
 					StartDate:   date.Format(time.RFC3339),
 					EndDate:     date.Add(8 * time.Hour).Format(time.RFC3339), // Ejemplo: duración de 8 horas
-					Status:      "Scheduled",
+					Status:      "Pending",
 				}
 
 				// Guardar la nueva orden en Firestore
