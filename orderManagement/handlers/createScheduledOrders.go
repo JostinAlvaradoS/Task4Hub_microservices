@@ -34,6 +34,7 @@ func CreateScheduledOrders(w http.ResponseWriter, r *http.Request) {
 		Location    models.Location        `json:"location"`
 		Type        string                 `json:"type"`
 		ManagerId   string                 `json:"managerId"`
+		Rooms       []models.Rooms         `json:"rooms"`
 		ManagerName string                 `json:"managerName"`
 		Schedule    []models.ScheduleEntry `json:"schedule"`
 	}
@@ -48,22 +49,39 @@ func CreateScheduledOrders(w http.ResponseWriter, r *http.Request) {
 		dayOfWeek := date.Weekday().String()
 		for _, scheduleEntry := range orderTemplate.Schedule {
 			if scheduleEntry.Day == dayOfWeek {
+				startTime, err := time.Parse("15:04", scheduleEntry.StartTime)
+				if err != nil {
+					http.Error(w, "Invalid start time format", http.StatusBadRequest)
+					return
+				}
+				endTime, err := time.Parse("15:04", scheduleEntry.EndTime)
+				if err != nil {
+					http.Error(w, "Invalid end time format", http.StatusBadRequest)
+					return
+				}
+
+				startDateTime := time.Date(date.Year(), date.Month(), date.Day(), startTime.Hour(), startTime.Minute(), 0, 0, time.UTC)
+				endDateTime := time.Date(date.Year(), date.Month(), date.Day(), endTime.Hour(), endTime.Minute(), 0, 0, time.UTC)
+
 				newOrder := models.Order{
 					CompanyId:   orderTemplate.CompanyId,
 					Location:    orderTemplate.Location,
 					Type:        orderTemplate.Type,
 					ManagerId:   orderTemplate.ManagerId,
 					ManagerName: orderTemplate.ManagerName,
+					Rooms:       orderTemplate.Rooms,
+					Schedule:    orderTemplate.Schedule,
 					Date:        date.Format("2006-01-02"),
-					StartDate:   date.Format(time.RFC3339),
-					EndDate:     date.Add(8 * time.Hour).Format(time.RFC3339), // Ejemplo: duración de 8 horas
+					StartDate:   startDateTime.Format(time.RFC3339),
+					EndDate:     endDateTime.Format(time.RFC3339),
 					Status:      "Pending",
+					Scheduled:   true,
 				}
 
 				// Guardar la nueva orden en Firestore
 				docRef := firebase.Client.Collection("order").NewDoc()
 				newOrder.ID = docRef.ID
-				_, err := docRef.Set(context.Background(), newOrder)
+				_, err = docRef.Set(context.Background(), newOrder)
 				if err != nil {
 					http.Error(w, "Error creating order", http.StatusInternalServerError)
 					return

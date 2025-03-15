@@ -73,6 +73,7 @@ func UpdateOrder(w http.ResponseWriter, r *http.Request) {
 	if len(order.Schedule) > 0 {
 		existingOrder.Schedule = order.Schedule
 	}
+	existingOrder.Scheduled = order.Scheduled
 
 	// Guardar la orden actualizada en Firestore
 	_, err = docRef.Set(context.Background(), existingOrder)

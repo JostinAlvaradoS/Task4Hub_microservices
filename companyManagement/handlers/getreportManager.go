@@ -25,12 +25,18 @@ type Report struct {
 }
 
 func GetReportManager(w http.ResponseWriter, r *http.Request) {
-	// Obtener el companyId de la URL
+	// Obtener el companyId y la fecha de la URL
 	vars := mux.Vars(r)
 	companyId := vars["companyId"]
+	dateStr := vars["date"]
 
-	// Obtener la fecha actual en UTC
-	currentDate := time.Now().UTC().Format("2006-01-02")
+	// Parsear la fecha en el formato aaaa-mm-dd
+	date, err := time.Parse("2006-01-02", dateStr)
+	if err != nil {
+		http.Error(w, "Invalid date format", http.StatusBadRequest)
+		return
+	}
+	formattedDate := date.Format("2006-01-02")
 
 	// Obtener todos los usuarios con Status == active
 	usersIter := firebase.Client.Collection("user").Where("CompanyId", "==", companyId).Where("Status", "==", "active").Documents(context.Background())
@@ -47,8 +53,8 @@ func GetReportManager(w http.ResponseWriter, r *http.Request) {
 		activeUsersCount++
 	}
 
-	// Obtener todas las actividades completadas del día actual
-	completedActivitiesIter := firebase.Client.Collection("activity").Where("CompanyID", "==", companyId).Where("Status", "==", "finished").Where("Date", "==", currentDate).Documents(context.Background())
+	// Obtener todas las actividades completadas de la fecha especificada
+	completedActivitiesIter := firebase.Client.Collection("activity").Where("CompanyID", "==", companyId).Where("Status", "==", "finished").Where("Date", "==", formattedDate).Documents(context.Background())
 	completedActivitiesMap := make(map[string]*CompletedActivity)
 	for {
 		doc, err := completedActivitiesIter.Next()
@@ -78,8 +84,8 @@ func GetReportManager(w http.ResponseWriter, r *http.Request) {
 		completedActivities = append(completedActivities, *ca)
 	}
 
-	// Obtener todas las actividades no completadas del día actual
-	uncompletedActivitiesIter := firebase.Client.Collection("activity").Where("CompanyID", "==", companyId).Where("Status", "==", "pending").Where("Date", "==", currentDate).Documents(context.Background())
+	// Obtener todas las actividades no completadas de la fecha especificada
+	uncompletedActivitiesIter := firebase.Client.Collection("activity").Where("CompanyID", "==", companyId).Where("Status", "==", "pending").Where("Date", "==", formattedDate).Documents(context.Background())
 	uncompletedActivitiesCount := 0
 	for {
 		_, err := uncompletedActivitiesIter.Next()
