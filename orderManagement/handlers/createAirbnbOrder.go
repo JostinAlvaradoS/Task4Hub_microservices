@@ -9,19 +9,22 @@ import (
 	"task.com/orderManagement/models"
 )
 
+type CreateAirbnbOrderRequest struct {
+	Order      models.Order      `json:"order"`
+	Activities []models.Activity `json:"activities"`
+}
+
 func CreateAirbnbOrder(w http.ResponseWriter, r *http.Request) {
-	var order models.Order
-	if err := json.NewDecoder(r.Body).Decode(&order); err != nil {
+	var request CreateAirbnbOrderRequest
+	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// Limpiar los campos de fecha y otros detalles específicos
-	order.StartDate = ""
-	order.EndDate = ""
+	order := request.Order
 	order.Status = "pending"
 
-	docRef := firebase.Client.Collection("order").NewDoc()
+	docRef := firebase.Client.Collection("orderAirbnbPending").NewDoc()
 	order.ID = docRef.ID
 
 	// Guardar la orden en Firestore
@@ -29,6 +32,23 @@ func CreateAirbnbOrder(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+
+	// Crear actividades pendientes para la orden
+	for _, activity := range request.Activities {
+		activity.OrderID = order.ID
+		activity.CompanyID = order.CompanyId
+		activity.Status = "pending"
+		activity.ActivityType = "airbnb"
+
+		activityDocRef := firebase.Client.Collection("activitiesAirbnbPending").NewDoc()
+		activity.ID = activityDocRef.ID
+
+		_, err := activityDocRef.Set(context.Background(), activity)
+		if err != nil {
+			http.Error(w, "Error creating activity", http.StatusInternalServerError)
+			return
+		}
 	}
 
 	w.WriteHeader(http.StatusCreated)

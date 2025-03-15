@@ -44,6 +44,10 @@ func NewHTTPHandler() http.Handler {
 	router.HandleFunc("/updateOrder", handlers.UpdateOrder).Methods("POST")
 	// Nueva ruta para crear órdenes programadas
 	router.HandleFunc("/createScheduledOrders/{startDate}/{endDate}", handlers.CreateScheduledOrders).Methods("POST")
+	// Ruta para crear ordenes de airbnb
+	router.HandleFunc("/createAirbnbOrder", handlers.CreateAirbnbOrder).Methods("POST")
+	// Ruta para obtener las ordenes programadas
+	router.HandleFunc("/getScheduledOrders/{companyId}", handlers.GetScheduledOrders).Methods("GET")
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:5173", "https://task4hub.com", "https://www.task4hub.com"}, // Cambia esto para restringir los orígenes permitidos

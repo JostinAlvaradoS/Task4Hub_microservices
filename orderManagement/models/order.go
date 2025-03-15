@@ -13,6 +13,7 @@ type Order struct {
 	StartDate   string          `json:"startDate"`
 	EndDate     string          `json:"endDate"`
 	Status      string          `json:"status"`
+	Scheduled   bool            `json:"scheduled"`
 	Schedule    []ScheduleEntry `json:"schedule"`
 }
 
