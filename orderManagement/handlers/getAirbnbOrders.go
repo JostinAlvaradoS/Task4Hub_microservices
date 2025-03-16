@@ -17,7 +17,7 @@ func GetAirbnbOrders(w http.ResponseWriter, r *http.Request) {
 	companyId := vars["companyId"]
 
 	// Realizar una consulta en Firestore para buscar las órdenes del día actual y de la empresa específica
-	iter := firebase.Client.Collection("order").Where("CompanyId", "==", companyId).Where("Type", "==", "airbnb").Documents(context.Background())
+	iter := firebase.Client.Collection("orderAirbnbPending").Where("CompanyId", "==", companyId).Documents(context.Background())
 	var orders []models.Order
 	for {
 		doc, err := iter.Next()

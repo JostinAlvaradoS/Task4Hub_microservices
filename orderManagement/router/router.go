@@ -38,6 +38,8 @@ func NewHTTPHandler() http.Handler {
 	router.HandleFunc("/orders/diaries/{companyId}/{employeeID}/{date}", handlers.GetDiariesOrdersEmployee).Methods("GET")
 	// Get orders by type=airbnb
 	router.HandleFunc("/getAirbnbOrders/{companyId}", handlers.GetAirbnbOrders).Methods("GET")
+	// Get activities airbnb per order
+	router.HandleFunc("/getActivitiesAirbnb/{orderID}", handlers.GetAirbnbActivities).Methods("GET")
 	// Get activities per employee
 	router.HandleFunc("/getActivitiesPerEmployee/{employeeID}/{date}", handlers.GetActivitiesPerEmployee).Methods("GET")
 	// Update order
