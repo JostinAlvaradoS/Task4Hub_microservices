@@ -14,7 +14,7 @@ import (
 func GetAirbnbActivities(w http.ResponseWriter, r *http.Request) {
 	// Obtener el companyId de la URL
 	vars := mux.Vars(r)
-	companyId := vars["orderId"]
+	companyId := vars["orderID"]
 
 	// Realizar una consulta en Firestore para buscar las actividades pendientes de Airbnb de la empresa específica
 	iter := firebase.Client.Collection("activitiesAirbnbPending").Where("OrderID", "==", companyId).Documents(context.Background())

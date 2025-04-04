@@ -6,8 +6,8 @@ type Observation struct {
 }
 
 type Evidence struct {
-	ImageBefore string `json:"imageBefore"`
-	ImageAfter  string `json:"imageAfter"`
+	ImagesBefore []string `json:"imagesBefore"`
+	ImagesAfter  []string `json:"imagesAfter"`
 }
 
 type Locker struct {
@@ -24,7 +24,6 @@ type Rooms struct {
 	Evidence    Evidence    `json:"evidence"`
 	Locker      Locker      `json:"locker"`
 	Bed         []Bed       `json:"bed"`
-	FloorType   string      `json:"floorType"`
 }
 
 type Bed struct {

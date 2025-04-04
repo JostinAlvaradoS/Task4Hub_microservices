@@ -10,6 +10,10 @@ type User struct {
 	UID         string   `json:"uid"`
 	Status      string   `json:"status"`
 	Schedule    Schedule `json:"schedule"`
+	ABN         string   `json:"abn"`
+	TFN         string   `json:"tfn"`
+	Address     string   `json:"address"`
+	Phone       string   `json:"phone"`
 }
 
 type Schedule struct {
