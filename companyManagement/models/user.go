@@ -9,4 +9,8 @@ type User struct {
 	CompanyName string `json:"companyName"`
 	UID         string `json:"uid"`
 	Status      string `json:"status"`
+	ABN         string `json:"abn"`
+	TFN	   string `json:"tfn"`
+	Address     string `json:"address"`
+	Phone       string `json:"phone"`
 }

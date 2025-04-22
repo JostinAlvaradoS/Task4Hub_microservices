@@ -20,6 +20,8 @@ func NewHTTPHandler() http.Handler {
 	router.HandleFunc("/addStock", handlers.AddStock).Methods("POST")
 	router.HandleFunc("/getStock/{companyId}", handlers.GetStock).Methods("GET")
 	router.HandleFunc("/restock", handlers.Restock).Methods("POST")
+	router.HandleFunc("/editStock", handlers.EditStock).Methods("POST")
+	router.HandleFunc("/insertBaseData", handlers.InsertBaseData).Methods("POST")
 	//get report
 	router.HandleFunc("/report/{companyId}/{date}", handlers.GetReportManager).Methods("GET")
 	corsHandler := cors.New(cors.Options{

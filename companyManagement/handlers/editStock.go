@@ -12,17 +12,25 @@ import (
 	"task.com/companyManagement/models"
 )
 
-func Restock(w http.ResponseWriter, r *http.Request) {
-	var restockRequest models.RestockRequest
-	if err := json.NewDecoder(r.Body).Decode(&restockRequest); err != nil {
+type EditStockRequest struct {
+	CompanyID     string `json:"companyId"`
+	CategoryID    string `json:"categoryId,omitempty"`
+	SubcategoryID string `json:"subcategoryId,omitempty"`
+	ProductID     string `json:"productId,omitempty"`
+	NewName       string `json:"newName"`
+}
+
+func EditStock(w http.ResponseWriter, r *http.Request) {
+	var editRequest EditStockRequest
+	if err := json.NewDecoder(r.Body).Decode(&editRequest); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	log.Printf("Restock request received: %+v", restockRequest)
+	log.Printf("EditStock request received: %+v", editRequest)
 
 	// Obtener el documento del stock por el ID de la empresa
-	iter := firebase.Client.Collection("stock").Where("CompanyID", "==", restockRequest.CompanyID).Documents(context.Background())
+	iter := firebase.Client.Collection("stock").Where("CompanyID", "==", editRequest.CompanyID).Documents(context.Background())
 	var stock models.Stock
 	var docRef *firestore.DocumentRef
 	for {
@@ -49,19 +57,28 @@ func Restock(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Stock found: %+v", stock)
 
-	// Actualizar la cantidad actual del producto
+	// Editar la categoría, subcategoría o producto
 	updated := false
 	for i, category := range stock.Categories {
-		if category.CategoryID == restockRequest.CategoryID {
+		if category.CategoryID == editRequest.CategoryID {
+			// Editar categoría
+			if editRequest.SubcategoryID == "" && editRequest.ProductID == "" {
+				stock.Categories[i].CategoryName = editRequest.NewName
+				updated = true
+				break
+			}
 			for j, subcategory := range category.Subcategories {
-				if subcategory.SubcategoryID == restockRequest.SubcategoryID {
+				if subcategory.SubcategoryID == editRequest.SubcategoryID {
+					// Editar subcategoría
+					if editRequest.ProductID == "" {
+						stock.Categories[i].Subcategories[j].SubcategoryName = editRequest.NewName
+						updated = true
+						break
+					}
 					for k, product := range subcategory.Products {
-						if product.ProductID == restockRequest.ProductID {
-							log.Printf("Product found: %+v", product)
-							stock.Categories[i].Subcategories[j].Products[k].CurrentAmount += restockRequest.Amount
-							if stock.Categories[i].Subcategories[j].Products[k].CurrentAmount > stock.Categories[i].Subcategories[j].Products[k].TargetAmount {
-								stock.Categories[i].Subcategories[j].Products[k].CurrentAmount = stock.Categories[i].Subcategories[j].Products[k].TargetAmount
-							}
+						if product.ProductID == editRequest.ProductID {
+							// Editar producto
+							stock.Categories[i].Subcategories[j].Products[k].ProductName = editRequest.NewName
 							updated = true
 							break
 						}
@@ -72,8 +89,7 @@ func Restock(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !updated {
-		log.Printf("Product not found in stock: CategoryID=%s, SubcategoryID=%s, ProductID=%s", restockRequest.CategoryID, restockRequest.SubcategoryID, restockRequest.ProductID)
-		http.Error(w, "Producto no encontrado", http.StatusNotFound)
+		http.Error(w, "Elemento no encontrado para editar", http.StatusNotFound)
 		return
 	}
 

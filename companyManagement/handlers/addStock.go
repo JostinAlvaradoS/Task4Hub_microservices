@@ -6,8 +6,7 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/firestore"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	"google.golang.org/api/iterator"
 	"task.com/companyManagement/firebase"
 	"task.com/companyManagement/models"
 )
@@ -19,23 +18,41 @@ func AddStock(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Referencia al documento
-	docRef := firebase.Client.Collection("stock").Doc(newStock.CompanyID)
-
-	// Ejecutar la transacción
-	err := firebase.Client.RunTransaction(context.Background(), func(ctx context.Context, tx *firestore.Transaction) error {
-		doc, err := tx.Get(docRef)
-		if err != nil {
-			if status.Code(err) == codes.NotFound {
-				// Si el documento no existe, crear uno nuevo
-				return tx.Set(docRef, newStock)
-			}
-			return err
+	// Buscar el documento de stock correspondiente al companyId
+	iter := firebase.Client.Collection("stock").Where("CompanyID", "==", newStock.CompanyID).Documents(context.Background())
+	var existingDoc *firestore.DocumentSnapshot
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
 		}
+		if err != nil {
+			http.Error(w, "Error al buscar el stock", http.StatusInternalServerError)
+			return
+		}
+		existingDoc = doc
+		break
+	}
 
-		// Documento existente
+	// Si no se encuentra un documento, crear uno nuevo
+	if existingDoc == nil {
+		docRef := firebase.Client.Collection("stock").NewDoc()
+		newStock.CompanyID = newStock.CompanyID
+		_, err := docRef.Set(context.Background(), newStock)
+		if err != nil {
+			http.Error(w, "Error al crear el stock", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(newStock)
+		return
+	}
+
+	// Documento existente: actualizar el stock
+	docRef := existingDoc.Ref
+	err := firebase.Client.RunTransaction(context.Background(), func(ctx context.Context, tx *firestore.Transaction) error {
 		var existingStock models.Stock
-		if err := doc.DataTo(&existingStock); err != nil {
+		if err := existingDoc.DataTo(&existingStock); err != nil {
 			return err
 		}
 
