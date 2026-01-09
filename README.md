@@ -15,4 +15,4 @@ export GOPATH=$HOME/go
 export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
 
 
-Referenciar correctamente la carpeta de config/key.json en el archivo firebase/firebase.go para poder inicializar firebase para el proyecto.
+Referenciar correctamente la carpeta de config/key.json en el archivo firebase/firebase.go para poder inicializar firebase para el proyecto.# Task4Hub_microservices
